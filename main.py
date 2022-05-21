@@ -1,4 +1,3 @@
-import csv
 from datetime import datetime
 from google.cloud import *
 from google.cloud import bigquery
@@ -15,9 +14,6 @@ with open("data/events.json") as file:
 
 rsvps = pd.json_normalize(data, record_path=['rsvps'], record_prefix = 'rsvps_', meta=['name', 'status', 'time', 'duration', 'group_id', 'created', 'description'])
 
-
-#events = events.drop(['rsvps'], axis = 1)
-
 rsvps.to_json('events_flat.json', orient='records', lines=True)
 
 '''with open("events_new.json", "r") as read_file:
@@ -29,24 +25,16 @@ with open('events-processed.json', 'w') as obj:
 
 def load_bq(file, table_id, load_type):
 
-    '''with open(file) as f:
-        all_cols_from_file = f.readline()
-    all_cols_from_file=all_cols_from_file.rstrip('\n').upper().split(',')
-    print(all_cols_from_file)'''
-
     # Construct a BigQuery client object.
     client = bigquery.Client()
 
-    # Post-2014
-    #schema = [{'name': 'ts', 'type': 'DATE', 'mode': 'REQUIRED'}, {'name': 'sc_code', 'type': 'INTEGER', 'mode': 'REQUIRED'}, {'name': 'sc_name', 'type': 'STRING', 'mode': 'REQUIRED'}, {'name': 'sc_group', 'type': 'STRING', 'mode': 'REQUIRED'}, {'name': 'sc_type', 'type': 'STRING', 'mode': 'REQUIRED'}, {'name': 'open', 'type': 'NUMERIC', 'mode': 'REQUIRED'}, {'name': 'high', 'type': 'NUMERIC', 'mode': 'REQUIRED'}, {'name': 'low', 'type': 'NUMERIC', 'mode': 'REQUIRED'}, {'name': 'close', 'type': 'NUMERIC', 'mode': 'REQUIRED'}, {'name': 'last', 'type': 'NUMERIC', 'mode': 'REQUIRED'}, {'name': 'prevclose', 'type': 'NUMERIC', 'mode': 'REQUIRED'}, {'name': 'no_trades', 'type': 'INTEGER', 'mode': 'REQUIRED'}, {'name': 'NO_OF_SHRS', 'type': 'INTEGER', 'mode': 'REQUIRED'}, {'name': 'NET_TURNOVER', 'type': 'NUMERIC', 'mode': 'REQUIRED'}, {'name': 'TDCLOINDI', 'type': 'STRING', 'mode': 'NULLABLE'}, {'name': 'ISIN', 'type': 'STRING', 'mode': 'NULLABLE'}]
-
-    job_config = bigquery.LoadJobConfig(autodetect=True,
+    job_config = bigquery.LoadJobConfig(
+        autodetect=True,
         source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-        #schema=schema,
         write_disposition=load_type
     )
 
-    # Loading CSV file from local system
+    # Loading JSON file from local system
     with open(file, "rb") as source_file:
         job = client.load_table_from_file(source_file, table_id, job_config=job_config)
 
@@ -63,7 +51,6 @@ def load_bq(file, table_id, load_type):
             table.num_rows, len(table.schema), table_id
         )
     )
-
 
 def main():
 
