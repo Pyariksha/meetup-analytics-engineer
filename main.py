@@ -38,10 +38,6 @@ def load_bq(file, table_id, load_type):
     with open(file, "rb") as source_file:
         job = client.load_table_from_file(source_file, table_id, job_config=job_config)
 
-    # Loading CSV file from GCS
-    # uri = "gs://<<bucket-name>>/bse/bhavcopy_csv/EQ_ISINCODE_280921.CSV"
-    # job = client.load_table_from_uri(uri, table_id, job_config=job_config) 
-
     job.result()  # Waits for the job to complete.
     print(job)
 
