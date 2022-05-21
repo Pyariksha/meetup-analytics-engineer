@@ -21,5 +21,19 @@ rsvps = pd.json_normalize(data, record_path=['rsvps'], record_prefix = 'rsvps_',
 
 rsvps.to_json('events_flat.json', orient='records', lines=True)
 
+'''with open("events_new.json", "r") as read_file:
+    data = json.load(read_file)
+result = [json.dumps(record) for record in data]
+with open('events-processed.json', 'w') as obj:
+    for i in result:
+        obj.write(i+'\n')'''
+
+'''
+groups = pd.read_json('data/groups.json')
+events = pd.read_json('data/events.json')
+users = pd.read_json('data/users.json')
+venues = pd.read_json('data/venues.json')
+'''
+
 
 
