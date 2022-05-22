@@ -1,0 +1,7 @@
+steps:
+- name: 'docker.io/library/python:3.9'
+  entrypoint: /bin/sh
+  # Run pip install and pytest in the same build step
+  args: [-c, 'pip install -r requirements.txt']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'get_tweets_ikea', '--trigger-topic', 'ikea', '--runtime', 'python39', '--entry-point', 'get_tweets_ikea']
