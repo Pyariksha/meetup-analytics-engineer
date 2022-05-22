@@ -52,7 +52,11 @@ def main(file, table_name):
     load_bq(file, table_id, 'WRITE_TRUNCATE')
 
 if __name__ == "__main__":
-    main('events_flat.json', 'events')
-    main("groups_flat.json", 'groups')
-    main("users_flat.json", 'users')
-    main("venues_flat.json", 'venues')
+    string = '_flat.json'
+    #list_src_file = ['events_flat.json','groups_flat.json','users_flat.json','venues_flat.json']
+    list_src_name = ['events','groups','users','venues']
+    for name in list_src_name:
+        main(name+string, name)
+        #main("groups_flat.json", 'groups')
+        #main("users_flat.json", 'users')
+        #main("venues_flat.json", 'venues')
