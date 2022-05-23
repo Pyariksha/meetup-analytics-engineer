@@ -91,14 +91,14 @@ def load_bq(file, table_id, load_type):
     )
 
 def main(file, table_name, src):
-    # `<<project-name>>.btd_in3.bse_daily_history`
+    
     table_id = '{}.{}.{}'.format('sigma-scheduler-348710', 'meetup', table_name)
 
-    #file = preprocess_file(input_filename)
+    print(f'preprocessing {src}')
     preprocess(src, file)
-
+    print(f'uploading {file} to gcs: {table_name}')
     upload_blob('pya_bucket', file, table_name)
-
+    print(f'loading to bq: {table_name}')
     load_bq(file, table_id, 'WRITE_TRUNCATE')
 
 if __name__ == "__main__":
