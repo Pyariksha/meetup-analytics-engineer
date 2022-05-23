@@ -113,3 +113,13 @@ main("venues_flat.json", 'venues')
 #load_bq("users_flat.json", table_id_u, 'WRITE_TRUNCATE')
 #load_bq("venues_flat.json", table_id_v, 'WRITE_TRUNCATE')
 
+'''
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'upload_blob', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'upload_blob']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'preprocess', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'preprocess']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'load_bq', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'load_bq']
+  ''''
+
+
