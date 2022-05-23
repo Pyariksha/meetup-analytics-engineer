@@ -96,10 +96,11 @@ def main(file, table_name, src):
 
     print(f'preprocessing {src}')
     preprocess(src, file)
+    '''
     print(f'uploading {file} to gcs: {table_name}')
     upload_blob('pya_bucket', file, table_name)
     print(f'loading to bq: {table_name}')
-    load_bq(file, table_id, 'WRITE_TRUNCATE')
+    load_bq(file, table_id, 'WRITE_TRUNCATE')'''
 
 if __name__ == "__main__":
     string = '_flat.json'
