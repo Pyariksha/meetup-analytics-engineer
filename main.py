@@ -127,12 +127,12 @@ def main(file, table_name, src):
     print(f'loading to bq: {table_name}')
     load_bq(file, table_id, 'WRITE_TRUNCATE')
 
-if __name__ == "__main__":
-    string = '_flat.json'
-    string1 = 'data/'
-    string2 = '.json'
-    list_src_name = ['events','groups','users','venues']
-    for name in list_src_name:
-        main(name+string, name, string1+name+string2)
+#if __name__ == "__main__":
+string = '_flat.json'
+string1 = 'data/'
+string2 = '.json'
+list_src_name = ['events','groups','users','venues']
+for name in list_src_name:
+    main(name+string, name, string1+name+string2)
 
 
