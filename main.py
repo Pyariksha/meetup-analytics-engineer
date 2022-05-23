@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from google.cloud import *
 from google.cloud import bigquery
@@ -13,6 +14,9 @@ def preprocess(js, name):
     if js == 'data/events.json':
         rsvps = pd.json_normalize(data, record_path=['rsvps'], record_prefix = 'rsvps_', meta=['name', 'status', 'time', 'duration', 'group_id', 'created', 'description'])
         rsvps.to_json(name, orient='records', lines=True)
+    elif js == 'data/users.json':
+        members = pd.json_normalize(data, record_path=['memberships'], record_prefix='memberships_', meta=['user_id', 'hometown', 'country', 'city'])
+        members.to_json(name, orient='records', lines=True)
     else:
         df = pd.json_normalize(data)
         df.to_json(name, orient='records', lines=True)
@@ -40,16 +44,24 @@ def load_bq(file, table_id, load_type):
         )
     )
 
-def main(file, table_name):
+#def main(file, table_name):
     # `<<project-name>>.btd_in3.bse_daily_history`
-    table_id = '{}.{}'.format('meetup', table_name)
+    #table_id = '{}.{}'.format('meetup', table_name)
+table_id = '{}.{}'.format('meetup', 'events')
+table_id = '{}.{}'.format('meetup', 'groups')
+table_id = '{}.{}'.format('meetup', 'users')
+table_id = '{}.{}'.format('meetup', 'venues')
 
-    #file = preprocess_file(input_filename)
-    preprocess("data/events.json", "events_flat.json")
-    preprocess("data/groups.json", "groups_flat.json")
-    preprocess("data/users.json", "users_flat.json")
-    preprocess("data/venues.json", "venues_flat.json")
-    load_bq(file, table_id, 'WRITE_TRUNCATE')
+#file = preprocess_file(input_filename)
+preprocess("data/events.json", "events_flat.json")
+preprocess("data/groups.json", "groups_flat.json")
+preprocess("data/users.json", "users_flat.json")
+preprocess("data/venues.json", "venues_flat.json")
+#load_bq(file, table_id, 'WRITE_TRUNCATE')
+load_bq("events_flat.json", table_id, 'WRITE_TRUNCATE')
+load_bq("groups_flat.json", table_id, 'WRITE_TRUNCATE')
+load_bq("users_flat.json", table_id, 'WRITE_TRUNCATE')
+load_bq("venues_flat.json", table_id, 'WRITE_TRUNCATE')
 
 #if __name__ == "__main__":
     #string = '_flat.json'
@@ -58,7 +70,7 @@ def main(file, table_name):
     #for name in list_src_name:
         #main(name+string, name)
 
-main("events_flat.json", 'events')
-main("groups_flat.json", 'groups')
-main("users_flat.json", 'users')
-main("venues_flat.json", 'venues')
+#main("events_flat.json", 'events')
+#main("groups_flat.json", 'groups')
+#main("users_flat.json", 'users')
+#main("venues_flat.json", 'venues')
