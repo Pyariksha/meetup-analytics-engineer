@@ -22,7 +22,7 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'sigma-scheduler-348710-0e55acb5c
 bq_client = Client()
 
 # export GOOGLE_APPLICATION_CREDENTIALS="sigma-scheduler-348710-0e55acb5c90d.json"  
-
+'''
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
   """Uploads a file to the bucket."""
   storage_client = storage.Client()
@@ -33,7 +33,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
   print('File {} uploaded to {}.'.format(
       source_file_name,
-      destination_blob_name))
+      destination_blob_name))'''
 
 def preprocess(js, name):
     with open(js) as file:
