@@ -94,6 +94,10 @@ def load_bq(file, table_id, load_type):
             table.num_rows, len(table.schema), table_id
         )
     )
+string = '_flat.json'
+string1 = 'data/'
+string2 = '.json'
+list_src_name = ['events','groups','users','venues']
 
 def run_all(file, table_name, src):
     
@@ -109,10 +113,6 @@ def run_all(file, table_name, src):
     load_bq(file, table_id, 'WRITE_TRUNCATE')
 
 if __name__ == "__main__":
-    string = '_flat.json'
-    string1 = 'data/'
-    string2 = '.json'
-    list_src_name = ['events','groups','users','venues']
     for name in list_src_name:
         run_all(name+string, name, string1+name+string2)
 
