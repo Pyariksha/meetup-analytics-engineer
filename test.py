@@ -91,3 +91,25 @@ main("groups_flat.json", 'groups')
 main("users_flat.json", 'users')
 main("venues_flat.json", 'venues')
 
+
+'''___test code: ignore___'''
+#table_id_e = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'events')
+#table_id_g = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'groups')
+#table_id_u = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'users')
+#table_id_v = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'venues')
+
+#preprocess("data/events.json", "events_flat.json")
+#preprocess("data/groups.json", "groups_flat.json")
+#preprocess("data/users.json", "users_flat.json")
+#preprocess("data/venues.json", "venues_flat.json")
+
+#upload_blob('pya_bucket', 'events_flat.json', 'events')
+#upload_blob('pya_bucket', 'groups_flat.json', 'groups')
+#upload_blob('pya_bucket', 'users_flat.json', 'users')
+#upload_blob('pya_bucket', 'venues_flat.json', 'venues')
+
+#load_bq("events_flat.json", table_id_e, 'WRITE_TRUNCATE')
+#load_bq("groups_flat.json", table_id_g, 'WRITE_TRUNCATE')
+#load_bq("users_flat.json", table_id_u, 'WRITE_TRUNCATE')
+#load_bq("venues_flat.json", table_id_v, 'WRITE_TRUNCATE')
+
