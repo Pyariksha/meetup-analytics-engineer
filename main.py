@@ -8,17 +8,20 @@ from pandas.io.json import json_normalize #package for flattening json in pandas
 import logging
 import os
 from google.cloud import storage
-
-# export GOOGLE_APPLICATION_CREDENTIALS="sigma-scheduler-348710-0e55acb5c90d.json"  
-
+from google.cloud.bigquery.client import Client
 from google.oauth2 import service_account
 
-# path to credentials
+# Path to the service account credentials
 key_path = "sigma-scheduler-348710-0e55acb5c90d.json"
-
 credentials = service_account.Credentials.from_service_account_file(
-    key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"],
+    key_path,
+    scopes=["https://www.googleapis.com/auth/cloud-platform"],
 )
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'sigma-scheduler-348710-0e55acb5c90d.json'
+bq_client = Client()
+
+# export GOOGLE_APPLICATION_CREDENTIALS="sigma-scheduler-348710-0e55acb5c90d.json"  
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
   """Uploads a file to the bucket."""
@@ -47,26 +50,35 @@ def preprocess(js, name):
 
 def load_bq(file, table_id, load_type):
     # Construct a BigQuery client object.
-    client = bigquery.Client(credentials=credentials, project=credentials.project_id,)
+    client = bigquery.Client()
     # job config bq
     job_config = bigquery.LoadJobConfig(
         autodetect=True,
         source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-        write_disposition=load_type
+        #write_disposition=load_type
     )
     # Loading JSON file from local system
-    """with open(file, "rb") as source_file:
-        load_job = client.load_table_from_file(source_file, table_id, job_config=job_config)"""
+    with open(file, "rb") as source_file:
+        load_job = client.load_table_from_file(source_file, table_id, job_config=job_config)
 
-    #load  from gcs
-    uri='gs://pya_bucket/events'
-
+    #OAUTH2 issue otherwise load from gcs bucket to bq tables
+    '''
+    #load from gcs
+    n = ['events', 'groups', 'users', 'venues']
+    if file == 'events_flat.json':
+        uri=f'gs://pya_bucket/{n[0]}'
+    elif file == 'groups_flat.json':
+        uri=f'gs://pya_bucket/{n[1]}'
+    elif file == 'users_flat.json':
+        uri=f'gs://pya_bucket/{n[2]}'
+    elif file == 'venues_flat.json':
+        uri=f'gs://pya_bucket/{n[3]}'
     load_job = client.load_table_from_uri(
     uri,
     table_id,
     location="EU",  # Must match the destination dataset location.
-    job_config=job_config,
-)  # Make an API request.
+    job_config=job_config,)  # Make an API request.
+    '''
 
     load_job.result()  # Waits for the job to complete.
     #print(job)
@@ -78,40 +90,44 @@ def load_bq(file, table_id, load_type):
         )
     )
 
-#def main(file, table_name):
-    #table_id = '{}.{}'.format('meetup', table_name)
-table_id_e = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'events')
+def main(file, table_name, src):
+    # `<<project-name>>.btd_in3.bse_daily_history`
+    table_id = '{}.{}.{}'.format('sigma-scheduler-348710', 'meetup', table_name)
+
+    #file = preprocess_file(input_filename)
+    preprocess(src, file)
+
+    upload_blob('pya_bucket', file, table_name)
+
+    load_bq(file, table_id, 'WRITE_TRUNCATE')
+
+if __name__ == "__main__":
+    string = '_flat.json'
+    string1 = 'data/'
+    string2 = '.json'
+    list_src_name = ['events','groups','users','venues']
+    for name in list_src_name:
+        main(name+string, name, string1+name+string2)
+
+
+'''___test code: ignore___'''
+#table_id_e = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'events')
 #table_id_g = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'groups')
 #table_id_u = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'users')
 #table_id_v = '{}.{}.{}'.format('sigma-scheduler-348710','meetup', 'venues')
 
-#file = preprocess_file(input_filename)
-preprocess("data/events.json", "events_flat.json")
+#preprocess("data/events.json", "events_flat.json")
 #preprocess("data/groups.json", "groups_flat.json")
 #preprocess("data/users.json", "users_flat.json")
 #preprocess("data/venues.json", "venues_flat.json")
 
-upload_blob('pya_bucket', 'events_flat.json', 'events')
+#upload_blob('pya_bucket', 'events_flat.json', 'events')
 #upload_blob('pya_bucket', 'groups_flat.json', 'groups')
 #upload_blob('pya_bucket', 'users_flat.json', 'users')
 #upload_blob('pya_bucket', 'venues_flat.json', 'venues')
 
-    #load_bq(file, table_id, 'WRITE_TRUNCATE')
-load_bq("events_flat.json", table_id_e, 'WRITE_TRUNCATE')
+#load_bq("events_flat.json", table_id_e, 'WRITE_TRUNCATE')
 #load_bq("groups_flat.json", table_id_g, 'WRITE_TRUNCATE')
 #load_bq("users_flat.json", table_id_u, 'WRITE_TRUNCATE')
 #load_bq("venues_flat.json", table_id_v, 'WRITE_TRUNCATE')
-
-#if __name__ == "__main__":
-    #string = '_flat.json'
-    #list_src_file = ['events_flat.json','groups_flat.json','users_flat.json','venues_flat.json']
-    #list_src_name = ['events','groups','users','venues']
-    #for name in list_src_name:
-        #main(name+string, name)
-
-#main("events_flat.json", 'events')
-#main("groups_flat.json", 'groups')
-#main("users_flat.json", 'users')
-#main("venues_flat.json", 'venues')
-
 
