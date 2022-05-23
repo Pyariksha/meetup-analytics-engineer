@@ -120,6 +120,6 @@ main("venues_flat.json", 'venues')
   args: ['functions', 'deploy', 'preprocess', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'preprocess']
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['functions', 'deploy', 'load_bq', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'load_bq']
-  ''''
+'''
 
 
