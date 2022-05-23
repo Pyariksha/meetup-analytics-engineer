@@ -11,16 +11,19 @@ from google.cloud import storage
 from google.cloud.bigquery.client import Client
 from google.oauth2 import service_account
 
-
 # Path to the service account credentials
-'''key_path = "sigma-scheduler-348710-0e55acb5c90d.json"
+'''
+key_path = "sigma-scheduler-348710-0e55acb5c90d.json"
 credentials = service_account.Credentials.from_service_account_file(
     key_path,
     scopes=["https://www.googleapis.com/auth/cloud-platform"],
-)'''
+)
+'''
+
 '''
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'sigma-scheduler-348710-0e55acb5c90d.json'
-bq_client = Client()'''
+bq_client = Client()
+'''
 
 # export GOOGLE_APPLICATION_CREDENTIALS="sigma-scheduler-348710-0e55acb5c90d.json"  
 
@@ -49,48 +52,6 @@ def preprocess(js, name):
         df = pd.json_normalize(data)
         df.to_json(name, orient='records', lines=True)
 
-"""def load_bq(file, table_id, load_type):
-    # Construct a BigQuery client object.
-    client = bigquery.Client()
-    # job config bq
-    job_config = bigquery.LoadJobConfig(
-        autodetect=True,
-        source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-        write_disposition=load_type
-    )
-    # Loading JSON file from local system
-    with open(file, "rb") as source_file:
-        load_job = client.load_table_from_file(source_file, table_id, job_config=job_config)
-
-    #OAUTH2 issue otherwise load from gcs bucket to bq tables
-    '''
-    #load from gcs
-    n = ['events', 'groups', 'users', 'venues']
-    if file == 'events_flat.json':
-        uri=f'gs://pya_bucket/{n[0]}'
-    elif file == 'groups_flat.json':
-        uri=f'gs://pya_bucket/{n[1]}'
-    elif file == 'users_flat.json':
-        uri=f'gs://pya_bucket/{n[2]}'
-    elif file == 'venues_flat.json':
-        uri=f'gs://pya_bucket/{n[3]}'
-    load_job = client.load_table_from_uri(
-    uri,
-    table_id,
-    location="EU",  # Must match the destination dataset location.
-    job_config=job_config,)  # Make an API request.
-    '''
-
-    load_job.result()  # Waits for the job to complete.
-    #print(job)
-
-    table = client.get_table(table_id)  # Make an API request.
-    print(
-        "Loaded {} rows and {} columns to {}".format(
-            table.num_rows, len(table.schema), table_id
-        )
-    )"""
-
 def load_bq(file, table_id, load_type):
     # Construct a BigQuery client object.
     client = bigquery.Client()
@@ -101,8 +62,28 @@ def load_bq(file, table_id, load_type):
         write_disposition=load_type
     )
     # Loading JSON file from local system
+    
     with open(file, "rb") as source_file:
         job = client.load_table_from_file(source_file, table_id, job_config=job_config)
+
+    #OAUTH2 issue otherwise load from gcs bucket to bq tables
+    """
+    #load from gcs
+    n = ['events', 'groups', 'users', 'venues']
+    if file == 'events_flat.json':
+        uri=f'gs://pya_bucket/{n[0]}'
+    elif file == 'groups_flat.json':
+        uri=f'gs://pya_bucket/{n[1]}'
+    elif file == 'users_flat.json':
+        uri=f'gs://pya_bucket/{n[2]}'
+    elif file == 'venues_flat.json':
+        uri=f'gs://pya_bucket/{n[3]}'
+    job = client.load_table_from_uri(
+    uri,
+    table_id,
+    location="EU",  # Must match the destination dataset location.
+    job_config=job_config,)  # Make an API request.
+    """
 
     job.result()  # Waits for the job to complete.
     print(job)
