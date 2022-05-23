@@ -11,19 +11,19 @@ from google.cloud import storage
 from google.cloud.bigquery.client import Client
 from google.oauth2 import service_account
 
-"""
+
 # Path to the service account credentials
 '''key_path = "sigma-scheduler-348710-0e55acb5c90d.json"
 credentials = service_account.Credentials.from_service_account_file(
     key_path,
     scopes=["https://www.googleapis.com/auth/cloud-platform"],
 )'''
-
+'''
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'sigma-scheduler-348710-0e55acb5c90d.json'
-bq_client = Client()
+bq_client = Client()'''
 
 # export GOOGLE_APPLICATION_CREDENTIALS="sigma-scheduler-348710-0e55acb5c90d.json"  
-'''
+
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
   #Uploads a file to the bucket
   storage_client = storage.Client()
@@ -34,7 +34,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 
   print('File {} uploaded to {}.'.format(
       source_file_name,
-      destination_blob_name))'''
+      destination_blob_name))
 
 def preprocess(js, name):
     with open(js) as file:
@@ -49,7 +49,7 @@ def preprocess(js, name):
         df = pd.json_normalize(data)
         df.to_json(name, orient='records', lines=True)
 
-def load_bq(file, table_id, load_type):
+"""def load_bq(file, table_id, load_type):
     # Construct a BigQuery client object.
     client = bigquery.Client()
     # job config bq
@@ -89,39 +89,7 @@ def load_bq(file, table_id, load_type):
         "Loaded {} rows and {} columns to {}".format(
             table.num_rows, len(table.schema), table_id
         )
-    )
-
-def main(file, table_name, src):
-    
-    table_id = '{}.{}'.format('meetup', table_name)
-
-    print(f'preprocessing {src}')
-    preprocess(src, file)
-    '''
-    print(f'uploading {file} to gcs: {table_name}')
-    upload_blob('pya_bucket', file, table_name)
-    print(f'loading to bq: {table_name}')
-    load_bq(file, table_id, 'WRITE_TRUNCATE')'''
-
-if __name__ == "__main__":
-    string = '_flat.json'
-    string1 = 'data/'
-    string2 = '.json'
-    list_src_name = ['events','groups','users','venues']
-    for name in list_src_name:
-        main(name+string, name, string1+name+string2)
-"""
-
-
-def preprocess(js, name):
-    with open(js) as file:
-        data = json.load(file)
-    if js == 'data/events.json':
-        rsvps = pd.json_normalize(data, record_path=['rsvps'], record_prefix = 'rsvps_', meta=['name', 'status', 'time', 'duration', 'group_id', 'created', 'description'])
-        rsvps.to_json(name, orient='records', lines=True)
-    else:
-        df = pd.json_normalize(data)
-        df.to_json(name, orient='records', lines=True)
+    )"""
 
 def load_bq(file, table_id, load_type):
     # Construct a BigQuery client object.
@@ -146,6 +114,41 @@ def load_bq(file, table_id, load_type):
         )
     )
 
+def main(file, table_name, src):
+    
+    table_id = '{}.{}'.format('meetup', table_name)
+
+    print(f'preprocessing {src}')
+    preprocess(src, file)
+    
+    print(f'uploading {file} to gcs: {table_name}')
+    upload_blob('pya_bucket', file, table_name)
+
+    print(f'loading to bq: {table_name}')
+    load_bq(file, table_id, 'WRITE_TRUNCATE')
+
+if __name__ == "__main__":
+    string = '_flat.json'
+    string1 = 'data/'
+    string2 = '.json'
+    list_src_name = ['events','groups','users','venues']
+    for name in list_src_name:
+        main(name+string, name, string1+name+string2)
+
+
+
+'''def preprocess(js, name):
+    with open(js) as file:
+        data = json.load(file)
+    if js == 'data/events.json':
+        rsvps = pd.json_normalize(data, record_path=['rsvps'], record_prefix = 'rsvps_', meta=['name', 'status', 'time', 'duration', 'group_id', 'created', 'description'])
+        rsvps.to_json(name, orient='records', lines=True)
+    else:
+        df = pd.json_normalize(data)
+        df.to_json(name, orient='records', lines=True)'''
+
+
+"""
 def main(file, table_name):
     # `<<project-name>>.btd_in3.bse_daily_history`
     table_id = '{}.{}'.format('meetup', table_name)
@@ -162,6 +165,6 @@ if __name__ == "__main__":
     list_src_file = ['events_flat.json','groups_flat.json','users_flat.json','venues_flat.json']
     list_src_name = ['events','groups','users','venues']
     for name in list_src_name:
-        main(name+string, name)
+        main(name+string, name)"""
 
 
