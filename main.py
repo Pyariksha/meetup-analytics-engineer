@@ -18,9 +18,9 @@ credentials = service_account.Credentials.from_service_account_file(
     key_path,
     scopes=["https://www.googleapis.com/auth/cloud-platform"],
 )'''
-
+'''
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'sigma-scheduler-348710-0e55acb5c90d.json'
-bq_client = Client()
+bq_client = Client()'''
 
 # export GOOGLE_APPLICATION_CREDENTIALS="sigma-scheduler-348710-0e55acb5c90d.json"  
 
@@ -120,7 +120,7 @@ def main(file, table_name, src):
 
     print(f'preprocessing {src}')
     preprocess(src, file)
-    
+    '
     print(f'uploading {file} to gcs: {table_name}')
     upload_blob('pya_bucket', file, table_name)
 
@@ -137,5 +137,34 @@ if __name__ == "__main__":
 
 
 
+'''def preprocess(js, name):
+    with open(js) as file:
+        data = json.load(file)
+    if js == 'data/events.json':
+        rsvps = pd.json_normalize(data, record_path=['rsvps'], record_prefix = 'rsvps_', meta=['name', 'status', 'time', 'duration', 'group_id', 'created', 'description'])
+        rsvps.to_json(name, orient='records', lines=True)
+    else:
+        df = pd.json_normalize(data)
+        df.to_json(name, orient='records', lines=True)'''
+
+
+"""
+def main(file, table_name):
+    # `<<project-name>>.btd_in3.bse_daily_history`
+    table_id = '{}.{}'.format('meetup', table_name)
+
+    #file = preprocess_file(input_filename)
+    preprocess("data/events.json", "events_flat.json")
+    preprocess("data/groups.json", "groups_flat.json")
+    preprocess("data/users.json", "users_flat.json")
+    preprocess("data/venues.json", "venues_flat.json")
+    load_bq(file, table_id, 'WRITE_TRUNCATE')
+
+if __name__ == "__main__":
+    string = '_flat.json'
+    list_src_file = ['events_flat.json','groups_flat.json','users_flat.json','venues_flat.json']
+    list_src_name = ['events','groups','users','venues']
+    for name in list_src_name:
+        main(name+string, name)"""
 
 
