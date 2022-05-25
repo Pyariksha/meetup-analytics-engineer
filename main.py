@@ -93,7 +93,7 @@ def load_to_bq(norm_file, schema, name):
     job = client.load_table_from_dataframe(
         norm_file, table_id, job_config=job_config
     )
-    # Wait for the load job to complete.
+    
     job.result()
     table = client.get_table(table_id)  # Make an API request.
     print("4. Loaded {} rows and {} columns to {} \n".format(table.num_rows, len(table.schema), table_id))
