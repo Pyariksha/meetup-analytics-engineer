@@ -1,5 +1,3 @@
-"""
-from google.cloud import *
 from google.cloud import bigquery
 import json 
 import pandas as pd 
@@ -9,7 +7,7 @@ from google.cloud import storage
 from google.cloud.bigquery.client import Client
 from google.cloud.storage import Client
 from google.oauth2 import service_account
-import pandas_gbq"""
+import pandas_gbq
 
 # Path to the service account credentials
 '''
