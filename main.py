@@ -136,7 +136,7 @@ schema_venues = [
             bigquery.SchemaField("country", "STRING"),
             bigquery.SchemaField("city", "STRING"),]
 
-def main():
+def main(data, context):
     '''
     This function runs the complete script for preprocessing the data files. 
     This function is included in the cloudbuild.yaml file for gcp.
@@ -164,4 +164,4 @@ def main():
 
 if __name__ == '__main__':
     #ensures that we run the function if in main file
-    main()
+    main('data', 'context')
