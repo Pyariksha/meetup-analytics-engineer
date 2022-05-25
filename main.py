@@ -111,11 +111,12 @@ schema_venues = [
             bigquery.SchemaField("created", "STRING"),
             bigquery.SchemaField("description", "STRING"),]
 
-runClass = Preprocess('pya_bucket1', 'pya_bucket1')
-x = runClass.get_raw('raw/events.json')
-y = runClass.transform_raw(x)
-runClass.write_clean_to_gcs(y,'events_norm.csv')
-runClass.load_to_bq(y, schema_events)
+if __name__ == '__main__':
+    runClass = Preprocess('pya_bucket1', 'pya_bucket1')
+    x = runClass.get_raw('raw/events.json')
+    y = runClass.transform_raw(x)
+    runClass.write_clean_to_gcs(y,'events_norm.csv')
+    runClass.load_to_bq(y, schema_events)
 
 '''
 def classname(obj):
