@@ -41,7 +41,7 @@ class Preprocess:
     
     def write_clean_to_gcs(self,norm_file,csv_name):
         bucket_name_write = self.bucket_name_write
-        norm_file.to_csv(f'gs://{bucket_name_write}/{csv_name}', sep=',')
+        norm_file.to_csv('gs://{}/{}'.format(bucket_name_write,csv_name), sep=',')
         print(f'Dataframe "norm_file" written as CSV to gcs bucket: {bucket_name_write}')
 
     def load_to_bq(self, norm_file, schema):
