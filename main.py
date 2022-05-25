@@ -17,24 +17,29 @@ credentials = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 '''
 '''
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'sigma-scheduler-348710-0e55acb5c90d.json'
-'''
-'''
+#Initially used a class but unable to load into gcp cloud functions
 class Preprocess:
         def __init__(self, bucket_name_read, bucket_name_write):
             self.bucket_name_read = bucket_name_read
             self.bucket_name_write = bucket_name_write'''
 
-def get_raw(raw_path_gcs, bucket_name_read):#self
+def get_raw(raw_path_gcs, bucket_name_read):
+    '''
+    This function gets raw json files that still contain repeated data into an object variable.
+    '''
     client = Client()
-    bucket_name_read = bucket_name_read #self
+    bucket_name_read = bucket_name_read
     bucket = client.get_bucket(bucket_name_read)
     blob = bucket.get_blob(raw_path_gcs)
     downloaded_json_file = json.loads(blob.download_as_text(encoding="utf-8"))
     print('1. Downloaded json object')
     return downloaded_json_file
 
-def transform_raw(downloaded_json_file, name):#self
+def transform_raw(downloaded_json_file, name):
+    '''
+    This function transforms the downloaded json files by normalizing them.
+    Note that the json files are saved locally as back ups.
+    '''
     try:
         if name == "events":
             norm_file = pd.json_normalize(downloaded_json_file, record_path=['rsvps'], record_prefix = 'rsvps_', meta=['name', 'status', 'time', 'duration', 'group_id', 'created', 'description'])
@@ -59,23 +64,31 @@ def transform_raw(downloaded_json_file, name):#self
     except:
         raise Exception('Failure in transform')
 
-def write_clean_to_gcs(norm_file,csv_name, bucket_name_write):#self
-    bucket_name_write = bucket_name_write #self
+def write_clean_to_gcs(norm_file,csv_name, bucket_name_write):
+    '''
+    This function writes the clean data to gcs as a csv.
+    This serves as a untouched source that is available outside of the database.
+    '''
+    bucket_name_write = bucket_name_write
     norm_file.to_csv('gs://{}/{}'.format(bucket_name_write,csv_name), sep=',')
     print('3. Dataframe "norm_file" written as CSV to gcs bucket: {}'.format(bucket_name_write))
 
 def load_to_bq(norm_file, schema, name):
+    '''
+    This function loads the pandas dfs to big query tables.
+    Note that all data types are string for simplicity of loading. This can be changed in the databases.
+    '''
     norm_file=norm_file.applymap(str)
-    project_name = 'sigma-scheduler-348710'#gcp project name
+    project_name = 'sigma-scheduler-348710'# gcp project name
     dataset_name = 'meetup'
     table_name = name
     table_id = '{}.{}'.format(dataset_name, table_name)
     #pandas_gbq.to_gbq(y,table_id, project_id=project_name, if_exists='append')#append tweets to table
     client = bigquery.Client()
     job_config = bigquery.LoadJobConfig(
-        #autodetect=True,
+        #autodetect=True, # This caused errors when big query tried to write file to parquet before loading
         schema=schema
-        ,write_disposition='WRITE_TRUNCATE',)
+        ,write_disposition='WRITE_TRUNCATE',) # Truncate to clear all rows and replace
     job = client.load_table_from_dataframe(
         norm_file, table_id, job_config=job_config
     )
@@ -84,6 +97,7 @@ def load_to_bq(norm_file, schema, name):
     table = client.get_table(table_id)  # Make an API request.
     print("4. Loaded {} rows and {} columns to {} \n".format(table.num_rows, len(table.schema), table_id))
 
+#schemas are explicitly saved in variables (avoids pyarrow errors when loading into bq)
 schema_events = [
             bigquery.SchemaField("rsvps_guests", "STRING"),
             bigquery.SchemaField("rsvps_when", "STRING"),
@@ -123,6 +137,10 @@ schema_venues = [
             bigquery.SchemaField("city", "STRING"),]
 
 def main():
+    '''
+    This function runs the complete script for preprocessing the data files. 
+    This function is included in the cloudbuild.yaml file for gcp.
+    '''
     bucket_name_read = 'pya_bucket1'
     bucket_name_write = 'pya_bucket1'
     string1 = 'raw/'
@@ -132,18 +150,18 @@ def main():
     for n in list_src_name:
         name = n
         print('Starting:',name)
-        x = get_raw(string1+n+string2, bucket_name_read)#runClass.
-        y = transform_raw(x, name)#runClass.
-        write_clean_to_gcs(y,n+string3,bucket_name_write)#runClass.
+        x = get_raw(string1+n+string2, bucket_name_read)
+        y = transform_raw(x, name)
+        write_clean_to_gcs(y,n+string3,bucket_name_write)
         if name == 'events':
-            load_to_bq(y, schema_events, name)#runClass.
+            load_to_bq(y, schema_events, name)
         elif name == 'groups':
-            load_to_bq(y, schema_groups, name)#runClass.
+            load_to_bq(y, schema_groups, name)
         elif name == 'users':
-            load_to_bq(y, schema_users, name)#runClass.
+            load_to_bq(y, schema_users, name)
         elif name == 'venues':
-            load_to_bq(y, schema_venues, name)#runClass.
+            load_to_bq(y, schema_venues, name)
 
 if __name__ == '__main__':
-    #runClass = Preprocess('pya_bucket1', 'pya_bucket1')
+    #ensures that we run the function if in main file
     main()
