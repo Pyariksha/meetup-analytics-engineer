@@ -4,4 +4,8 @@ steps:
   # Run pip install and pytest in the same build step
   args: [-c, 'pip install -r requirements.txt']
 - name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'upload_blob', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'upload_blob']
+- name: 'gcr.io/cloud-builders/gcloud'
   args: ['functions', 'deploy', 'load_bq', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'load_bq']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'run_all', '--trigger-topic', 'meetup', '--runtime', 'python39', '--entry-point', 'run_all']
