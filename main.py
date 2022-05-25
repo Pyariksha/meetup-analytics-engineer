@@ -115,5 +115,16 @@ schema_venues = [
 runClass = Preprocess('pya_bucket1', 'pya_bucket1')
 x = runClass.get_raw('raw/events.json')
 y = runClass.transform_raw(x)
-z = runClass.write_clean_to_gcs(y,'events_norm.csv')
-zz = runClass.load_to_bq(y, schema_events)
+runClass.write_clean_to_gcs(y,'events_norm.csv')
+runClass.load_to_bq(y, schema_events)
+
+'''
+def classname(obj):
+    cls = type(obj)
+    module = cls.__module__
+    name = cls.__qualname__
+    if module is not None and module != "__builtin__":
+        name = module + "." + name
+    return name
+
+print(classname(Preprocess))'''
