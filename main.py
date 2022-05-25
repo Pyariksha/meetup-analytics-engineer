@@ -38,7 +38,7 @@ def get_raw(raw_path_gcs, bucket_name_read):
 def transform_raw(downloaded_json_file, name):
     '''
     This function transforms the downloaded json files by normalizing them.
-    Note that the json files are saved locally as back ups.
+    Note that the json files were saved locally as back ups.
     '''
     try:
         if name == "events":
