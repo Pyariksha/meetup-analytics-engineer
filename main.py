@@ -11,10 +11,12 @@ from google.oauth2 import service_account
 import pandas_gbq
 
 # Path to the service account credentials
+'''
 SCOPES = ['https://www.googleapis.com/auth/sqlservice.admin']
 SERVICE_ACCOUNT_FILE = 'sigma-scheduler-348710-0e55acb5c90d.json'
 credentials = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+'''
 '''
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'sigma-scheduler-348710-0e55acb5c90d.json'
 '''
@@ -240,7 +242,5 @@ if __name__ == "__main__":
     for name in list_src_name:
         run_all(name+string, name, string1+name+string2)
         '''
-
-
 
 """
