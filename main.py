@@ -43,22 +43,22 @@ def transform_raw(downloaded_json_file, name):
     try:
         if name == "events":
             norm_file = pd.json_normalize(downloaded_json_file, record_path=['rsvps'], record_prefix = 'rsvps_', meta=['name', 'status', 'time', 'duration', 'group_id', 'created', 'description'])
-            norm_file.to_json('events_norm.json', orient='records', lines=True)
+            #norm_file.to_json('events_norm.json', orient='records', lines=True)
             print('2. Events normalized')
             return norm_file
         elif name == "groups":
             norm_file = pd.json_normalize(downloaded_json_file)
-            norm_file.to_json('groups_norm.json', orient='records', lines=True)
+            #norm_file.to_json('groups_norm.json', orient='records', lines=True)
             print('2. Groups normalized')
             return norm_file
         elif name == "users":
             norm_file = pd.json_normalize(downloaded_json_file, record_path=['memberships'], record_prefix='memberships_', meta=['user_id', 'hometown', 'country', 'city'])
-            norm_file.to_json('users_norm.json', orient='records', lines=True)
+            #norm_file.to_json('users_norm.json', orient='records', lines=True)
             print('2. Users normalized')
             return norm_file
         elif name == "venues":
             norm_file = pd.json_normalize(downloaded_json_file)
-            norm_file.to_json('venues_norm.json', orient='records', lines=True)
+            #norm_file.to_json('venues_norm.json', orient='records', lines=True)
             print('2. Venues normalized')
             return norm_file
     except:
