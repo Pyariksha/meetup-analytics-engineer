@@ -70,7 +70,7 @@ def write_clean_to_gcs(norm_file,csv_name, bucket_name_write):
     This serves as a untouched source that is available outside of the database.
     '''
     bucket_name_write = bucket_name_write
-    norm_file.to_csv('gs://{}/{}'.format(bucket_name_write,csv_name), sep=',')
+    norm_file.to_csv('gs://{}/tmp/{}'.format(bucket_name_write,csv_name), sep=',')
     print('3. Dataframe "norm_file" written as CSV to gcs bucket: {}'.format(bucket_name_write))
 
 def load_to_bq(norm_file, schema, name):
@@ -141,6 +141,8 @@ def main(data, context):
     This function runs the complete script for preprocessing the data files. 
     This function is included in the cloudbuild.yaml file for gcp.
     '''
+    data = data
+    context = context
     bucket_name_read = 'pya_bucket1'
     bucket_name_write = 'pya_bucket1'
     string1 = 'raw/'
