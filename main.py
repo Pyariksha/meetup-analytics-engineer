@@ -8,6 +8,7 @@ from google.cloud.bigquery.client import Client
 from google.cloud.storage import Client
 from google.oauth2 import service_account
 import pandas_gbq
+import fsspec
 
 # Path to the service account credentials
 '''
