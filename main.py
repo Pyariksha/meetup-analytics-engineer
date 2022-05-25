@@ -9,6 +9,7 @@ from google.cloud.storage import Client
 from google.oauth2 import service_account
 import pandas_gbq
 import fsspec
+import gcsfs
 
 # Path to the service account credentials
 '''

@@ -86,3 +86,4 @@ wcwidth==0.2.5
 wrapt==1.13.3
 pandas.io
 fsspec
+gcsfs==2022.5.0
