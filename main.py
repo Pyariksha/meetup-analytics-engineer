@@ -64,11 +64,11 @@ def write_clean_to_gcs(norm_file,csv_name, bucket_name_write):#self
     norm_file.to_csv('gs://{}/{}'.format(bucket_name_write,csv_name), sep=',')
     print('3. Dataframe "norm_file" written as CSV to gcs bucket: {}'.format(bucket_name_write))
 
-def load_to_bq(norm_file, schema):
+def load_to_bq(norm_file, schema, name):
     norm_file=norm_file.applymap(str)
     project_name = 'sigma-scheduler-348710'#gcp project name
     dataset_name = 'meetup'
-    table_name = 'events'
+    table_name = name
     table_id = '{}.{}'.format(dataset_name, table_name)
     #pandas_gbq.to_gbq(y,table_id, project_id=project_name, if_exists='append')#append tweets to table
     client = bigquery.Client()
@@ -136,13 +136,13 @@ def main():
         y = transform_raw(x, name)#runClass.
         write_clean_to_gcs(y,n+string3,bucket_name_write)#runClass.
         if name == 'events':
-            load_to_bq(y, schema_events)#runClass.
+            load_to_bq(y, schema_events, name)#runClass.
         elif name == 'groups':
-            load_to_bq(y, schema_groups)#runClass.
+            load_to_bq(y, schema_groups, name)#runClass.
         elif name == 'users':
-            load_to_bq(y, schema_users)#runClass.
+            load_to_bq(y, schema_users, name)#runClass.
         elif name == 'venues':
-            load_to_bq(y, schema_venues)#runClass.
+            load_to_bq(y, schema_venues, name)#runClass.
 
 if __name__ == '__main__':
     #runClass = Preprocess('pya_bucket1', 'pya_bucket1')
